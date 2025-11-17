@@ -60,7 +60,7 @@ def tokenize(
 
         return corpus_ids
 
-def bm25sRetriever(query):
+def bm25sretriever(query):
     bm25s.tokenize = tokenize
     file_path = "data_clean/textbooks/zh_paragraph/all_books.txt"
     
