@@ -1,6 +1,7 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from retrieval.bm25 import chinese_tokenizer
+from retrieval.bm25S import tokenize
 from retrieval.vector import cosineretriever
 from retrieval.bm25S import bm25sretriever
 from retrieval.bm25 import bm25retriever
@@ -22,9 +23,7 @@ while True:
     print("\n")
     if question =="q":
         break
-    # retriever = cosineretriever()
-    retriever = bm25retriever()
-    # reviews = bm25sRetriever(question)
+    retriever = cosineretriever()
     reviews = retriever.invoke(question)
     print('retrieval: ', reviews)
     result = chain.invoke({"reviews": reviews,"question": question})
