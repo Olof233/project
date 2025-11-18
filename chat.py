@@ -5,6 +5,8 @@ from retrieval.bm25S import tokenize
 from retrieval.vector import cosineretriever
 from retrieval.bm25S import bm25sretriever
 from retrieval.bm25 import bm25retriever
+from preprocessing.clean import remove_symbols
+from preprocessing.extract import extract
 
 model = OllamaLLM(model="qwen3:0.6b")
 
@@ -23,7 +25,9 @@ while True:
     print("\n")
     if question =="q":
         break
-    retriever = cosineretriever()
+    retriever = bm25retriever()
+    question = extract(remove_symbols(question))
+    print(question)
     reviews = retriever.invoke(question)
     print('retrieval: ', reviews)
     result = chain.invoke({"reviews": reviews,"question": question})
