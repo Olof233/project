@@ -13,5 +13,4 @@ def extract(text):
     model = SentenceTransformer('bert-base-chinese-sentence-transformer-xnli-zh', local_files_only=True)
     kw_model = KeyBERT(model)
     keywords = kw_model.extract_keywords(text, vectorizer=vectorizer)
-    print(keywords, '\n')
     return keywords[0][0]
