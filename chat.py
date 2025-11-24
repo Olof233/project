@@ -41,9 +41,12 @@ responses = []
 #     result = chain.invoke({"reviews": reviews,"question": question})
 #     print('\nanswer: ', result)
 
-def run(question, options, responses=responses):
+def run(question, options, responses=responses, extract=True):
     retriever = bm25retriever()
-    question = extract(remove_symbols(question))
+    if extract:
+        question = extract(remove_symbols(question))
+    else:
+        question = question
     reviews = retriever.invoke(question)
     result = chain.invoke({"reviews": reviews,"question": question, "options": options})
     responses.append(result)
