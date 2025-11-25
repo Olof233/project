@@ -16,6 +16,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 # Project imports
 from retrieval.bm25 import bm25retriever, chinese_tokenizer
 from retrieval.bm25S import bm25sretriever
+from retrieval.vector import cosineretriever
 from preprocessing.clean import remove_symbols
 
 # ==========================================
@@ -27,7 +28,7 @@ def append_batch_to_jsonl(data_list, filepath):
         return
 
     # 使用 'a' (append) 模式
-    with open(filepath, 'a', encoding='utf-8') as f:
+    with open(filepath, 'a+', encoding='utf-8') as f:
         for data in data_list:
             # 处理 LangChain 对象转字符串
             response_text = data['response']
@@ -46,7 +47,7 @@ def append_batch_to_jsonl(data_list, filepath):
 def run_pipeline():
     # --- 配置 ---
     input_file = 'data_clean/questions/Mainland/test.jsonl'
-    output_file = 'test_results.jsonl'
+    output_file = './test_results.jsonl'
     
     # ⏱️ 批量设置：50条 ≈ 2~3分钟 (取决于推理速度)
     BATCH_SIZE = 50  
@@ -79,7 +80,7 @@ def run_pipeline():
     print(f"Loaded {len(questions)} items.")
 
     print("Loading KeyBERT (MPS)...")
-    embed_model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2', device='mps')
+    embed_model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2', local_files_only=True)
     kw_model = KeyBERT(embed_model)
 
     # ==========================================
@@ -102,9 +103,10 @@ def run_pipeline():
     # Phase 3: 检索文档 (CPU)
     # ==========================================
     print("Step 3/4: Retrieving documents...")
-    bm25 = bm25retriever(k=2)
-    bm25s = bm25sretriever(k=2)
-    ensemble = EnsembleRetriever(retrievers=[bm25, bm25s], weights=[0.5, 0.5])
+    bm25 = bm25retriever()
+    bm25s = bm25sretriever()
+    cosine = cosineretriever()
+    ensemble = EnsembleRetriever(retrievers=[bm25, bm25s, cosine], weights=[0.2, 0.3, 0.5])
     
     llm_inputs = []
     
@@ -184,7 +186,8 @@ def run_pipeline():
             else:
                 # 错误偶尔打印一下，不要太频繁
                 pass 
-
+            
+            print(len(results_buffer))
             # 🔥 核心逻辑：缓冲区满了就落盘
             if len(results_buffer) >= BATCH_SIZE:
                 append_batch_to_jsonl(results_buffer, output_file)
