@@ -42,7 +42,7 @@ responses = []
 #     result = chain.invoke({"reviews": reviews,"question": question})
 #     print('\nanswer: ', result)
 
-def run(question, options, responses=responses, ifextract=True, ensemble=False):
+def run(question, options, responses=responses, ifextract=True, ensemble=True):
     if ensemble:
         retriever = EnsembleRetriever(
             retrievers=[cosineretriever(), bm25sretriever(), bm25retriever()],
