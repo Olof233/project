@@ -7,6 +7,7 @@ from retrieval.bm25S import bm25sretriever
 from retrieval.bm25 import bm25retriever
 from preprocessing.clean import remove_symbols
 from preprocessing.extract import extract
+from langchain_classic.retrievers import EnsembleRetriever
 import json
 import pickle
 from tqdm import tqdm
@@ -43,16 +44,16 @@ responses = []
 
 def run(question, options, responses=responses, ifextract=True, ensemble=False):
     if ensemble:
-        retrievers = [cosineretriever(k=2), bm25sretriever(k=2), bm25retriever(k=1)]
+        retriever = EnsembleRetriever(
+            retrievers=[cosineretriever(), bm25sretriever(), bm25retriever()],
+            weights=[0.4, 0.3, 0.3])
     else:
-        retrievers = [bm25retriever()]
+        retriever = bm25retriever()
     if ifextract:
         question = extract(remove_symbols(question))
     else:
         question = question
-    reviews = []
-    for retriever in retrievers:
-        reviews.append(a for a in retriever.invoke(question))
+    reviews = retriever.invoke(question)
     result = chain.invoke({"reviews": reviews,"question": question, "options": options})
     responses.append(result)
     
