@@ -14,7 +14,7 @@ def chinese_tokenizer(text: str) -> List[str]:
     return [token for token in tokens if token not in stopwords.words('chinese')]
 
 
-def bm25retriever():
+def bm25retriever(k=5):
     
     db_location = "bm25_db"
     add_documents = not os.path.exists(db_location)
@@ -26,7 +26,7 @@ def bm25retriever():
 
         bm25retriever = BM25Retriever.from_documents(
             Docs,
-            k = 5,
+            k = k,
             preprocess_func=chinese_tokenizer
         )
         

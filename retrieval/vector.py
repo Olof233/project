@@ -7,7 +7,7 @@ import pandas as pd
 import sys 
 sys.path.append("..") 
 
-def cosineretriever():
+def cosineretriever(k=5):
     RETRIEVER = cosine.cosine
     file_path = "data_clean/textbooks/zh_paragraph/all_books.txt"
     embeddings = OllamaEmbeddings(model="qwen3-embedding:0.6b")
@@ -36,5 +36,5 @@ def cosineretriever():
                     documents = []
                     print(length)
 
-    retriever = RETRIEVER(vector_store)
+    retriever = RETRIEVER(vector_store, k=k)
     return retriever
