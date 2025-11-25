@@ -30,11 +30,11 @@ def bm25retriever(k=5):
             preprocess_func=chinese_tokenizer
         )
         
-        with open("bm25_db\\bm25_retriever.pkl", "wb") as f:
+        with open("bm25_db/bm25_retriever.pkl", "wb") as f:
             pickle.dump(bm25retriever, f)
     
     else:
-        with open("bm25_db\\bm25_retriever.pkl", "rb") as f:
+        with open("bm25_db/bm25_retriever.pkl", "rb") as f:
             bm25retriever = pickle.load(f)
             
         bm25retriever.preprocess_func = chinese_tokenizer
