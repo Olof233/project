@@ -41,13 +41,18 @@ responses = []
 #     result = chain.invoke({"reviews": reviews,"question": question})
 #     print('\nanswer: ', result)
 
-def run(question, options, responses=responses, extract=True):
-    retriever = bm25retriever()
-    if extract:
+def run(question, options, responses=responses, ifextract=True, ensemble=False):
+    if ensemble:
+        retrievers = [cosineretriever(k=2), bm25sretriever(k=2), bm25retriever(k=1)]
+    else:
+        retrievers = [bm25retriever()]
+    if ifextract:
         question = extract(remove_symbols(question))
     else:
         question = question
-    reviews = retriever.invoke(question)
+    reviews = []
+    for retriever in retrievers:
+        reviews.append(a for a in retriever.invoke(question))
     result = chain.invoke({"reviews": reviews,"question": question, "options": options})
     responses.append(result)
     
