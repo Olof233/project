@@ -5,4 +5,4 @@ __pycache__/
 bm25_db/
 bert-base-chinese-sentence-transformer-xnli-zh/
 .DS_Store
-*.jsonl
+test_results.jsonl
